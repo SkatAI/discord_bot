@@ -33,12 +33,13 @@ jobs:
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
       # Step 3: Deploy the application
-      - name: Deploy with docker-compose
+      - name: Deploy to server
         run: |
-          # Copy the docker-compose file to the server
-          # Creates a directory structure like: ~/bots/student-name/
-          scp docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.HOST }}:~/bots/${{ github.repository_owner }}
+          # Create directory if it doesn't exist
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "mkdir -p ~/bots/${{ github.repository_owner }}"
 
-          # SSH into the server and run docker-compose
-          # ${{ github.repository_owner }} gives us the GitHub username
+          # Copy all files to the server
+          scp -r ./* ${{ secrets.SSH_USER }}@${{ secrets.HOST }}:~/bots/${{ github.repository_owner }}/
+
+          # Build and run with docker-compose
           ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "cd ~/bots/${{ github.repository_owner }} && docker-compose up -d --build"
