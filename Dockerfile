@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the bot code into the container
-COPY main.py .
+COPY src/main.py .
 
 # Run the bot when the container launches
 CMD ["python", "main.py"]
