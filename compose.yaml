@@ -2,8 +2,8 @@ version: '3'
 services:
   discord-bot:
     build: .
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     # specify which files you want in the container so that .env is not copied
     volumes:
       - ./main.py:/app/main.py
