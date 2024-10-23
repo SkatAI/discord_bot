@@ -1,0 +1,44 @@
+# Defines the name that appears in the GitHub Actions tab
+name: Deploy Discord Bot
+
+# Specifies when this workflow should run
+on:
+  push:
+    branches: [master] # Triggers only when code is pushed to the master branch
+
+# The actual jobs to run
+jobs:
+  deploy: # Name of the job
+    runs-on: ubuntu-latest # Uses the latest Ubuntu runner provided by GitHub
+
+    steps:
+      # Step 1: Check out the repository code
+      - uses: actions/checkout@v2 # This action checks out your repository code
+
+      # Step 2: Set up SSH for deployment
+      - name: Add SSH key
+        run: |
+          # Create .ssh directory if it doesn't exist
+          mkdir -p ~/.ssh
+
+          # Save the private key from GitHub secrets to a file
+          # The secret SSH_PRIVATE_KEY must be added to the repository settings
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+
+          # Set correct permissions for the SSH key (required by SSH)
+          chmod 600 ~/.ssh/id_rsa
+
+          # Add the host to known_hosts to prevent SSH verification prompts
+          # secrets.HOST is your server's IP address
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      # Step 3: Deploy the application
+      - name: Deploy with docker-compose
+        run: |
+          # Copy the docker-compose file to the server
+          # Creates a directory structure like: ~/bots/student-name/
+          scp docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.HOST }}:~/bots/${{ github.repository_owner }}
+
+          # SSH into the server and run docker-compose
+          # ${{ github.repository_owner }} gives us the GitHub username
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "cd ~/bots/${{ github.repository_owner }} && docker-compose up -d --build"
