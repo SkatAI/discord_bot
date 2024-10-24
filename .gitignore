@@ -24,4 +24,5 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+.github/workflows/deploy.yml.backup
 todo.md

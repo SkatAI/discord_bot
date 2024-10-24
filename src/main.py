@@ -1,9 +1,9 @@
-import discord
-from discord.ext import commands
 import os
 import random
 import logging
 import subprocess
+import discord
+from discord.ext import commands
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -11,14 +11,13 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+
 logger = logging.getLogger('discord_bot')
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-
-
 
 @bot.event
 async def on_ready():
@@ -36,7 +35,7 @@ async def ping(ctx):
 @bot.command(name='roll')
 async def roll(ctx, dice: str):
     """Rolls a dice in NdN format."""
-    logger.info(f"Roll command used by {ctx.author.name} [{ctx.author.status}] with argument {dice}")
+    logger.info(f"Roll command used by {ctx.author.name} [{ctx.author.status}] with {dice}")
     try:
         rolls, sides = map(int, dice.split('d'))
         logger.debug(f"Rolling {rolls} dice with {sides} sides")
@@ -51,13 +50,17 @@ async def roll(ctx, dice: str):
 
 @bot.command(name='inspire')
 async def inspire(ctx):
+    """Get an inspiring quote"""
     try:
-        fortune_output = subprocess.check_output(['fortune'], text=True)
+        fortune_output = subprocess.check_output(
+            "/usr/games/fortune | /usr/games/cowsay -f $(ls /usr/share/cowsay/cows/ | shuf -n1)",
+            shell=True,
+            text=True
+        )
+
     except FileNotFoundError:
         fortune_output = "The 'fortune' command is not installed on this system."
 
-    # Send the result back to the Discord channel
-    logger.info(f"fortune: {fortune_output}")
     await ctx.send(fortune_output)
 
 
