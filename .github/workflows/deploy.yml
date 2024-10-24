@@ -1,5 +1,5 @@
 # Defines the name that appears in the GitHub Actions tab
-name: Deploy Discord Bot
+name: DeployDiscordBot
 
 # Specifies when this workflow should run
 on:
@@ -31,6 +31,10 @@ jobs:
           # Add the host to known_hosts to prevent SSH verification prompts
           # secrets.HOST is your server's IP address
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+      - name: test connection
+        run: |
+          # test connection works
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "pwd"
 
       # Step 3: Deploy the application
       - name: Deploy to server
