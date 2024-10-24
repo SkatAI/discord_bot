@@ -49,6 +49,10 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "export DISCORD_TOKEN='${{ secrets.DISCORD_TOKEN }}'"
 
+      - name: get env variables
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "cp credentials/.env bots/SkatAI/"
+
       - name: Build and run with docker compose -d --build
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "cd ~/bots/${{ github.repository_owner }} && docker compose up -d --build"

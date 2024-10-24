@@ -1,15 +1,10 @@
-version: '3'
 services:
   discord-bot:
     build: .
-    # env_file:
-    #   - .env
     # specify which files you want in the container so that .env is not copied
     volumes:
       - ./src/main.py:/app/main.py
       - ./requirements.txt:/app/requirements.txt
 
-    # volumes:
-    #   - ./:/app
     environment:
       - DISCORD_TOKEN
