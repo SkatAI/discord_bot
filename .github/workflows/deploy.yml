@@ -46,4 +46,15 @@ jobs:
           scp -r ./* ${{ secrets.SSH_USER }}@${{ secrets.HOST }}:~/bots/${{ github.repository_owner }}/
 
           # Build and run with docker-compose
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "cd ~/bots/${{ github.repository_owner }} && docker compose up -d --build"
+          # ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "cd ~/bots/${{ github.repository_owner }} && docker compose up -d --build"
+
+      - name: Docker compose up
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/bots/${{ github.repository_owner }}
+            export DISCORD_TOKEN="${{ secrets.DISCORD_TOKEN }}"
+            docker-compose up -d --build
