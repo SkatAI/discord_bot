@@ -39,7 +39,7 @@ jobs:
       - name: Lint Python code with Pylint
         run: |
           python -m pip install pylint
-          pylint main.py || true
+          pylint src/main.py || true
 
       # Step 5: Validate docker-compose.yaml syntax
       # Note: the '|| true' makes the step successful regardless of the linting results
