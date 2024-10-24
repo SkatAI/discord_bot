@@ -3,7 +3,7 @@ import random
 import logging
 import subprocess
 import discord
-from discord.ext import commands
+from discord import app_commands  # Add this import
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -17,39 +17,51 @@ logger = logging.getLogger('discord_bot')
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+class MyBot(discord.Client):
+    def __init__(self):
+        super().__init__(intents=intents)
+        # Create a CommandTree instance
+        self.tree = app_commands.CommandTree(self)
+
+    async def setup_hook(self):
+        # This is called when the bot starts
+        await self.tree.sync()  # Sync commands with Discord
+
+bot = MyBot()
 
 @bot.event
 async def on_ready():
-    # print(f'{bot.user} has connected to Discord!')
     logger.info(f'{bot.user} has connected to Discord!')
 
-@bot.command(name='hello')
-async def hello(ctx):
-    await ctx.send(f"Wassup {ctx.author.name}!")
+@bot.tree.command(name="hello")
+async def hello(interaction: discord.Interaction):
+    """Says hello to the user"""
+    await interaction.response.send_message(f"Wassup {interaction.user.name}!")
 
-@bot.command(name='ping')
-async def ping(ctx):
-    await ctx.send('Pong!')
+@bot.tree.command(name="ping")
+async def ping(interaction: discord.Interaction):
+    """Responds with Pong!"""
+    await interaction.response.send_message("Pong!")
 
-@bot.command(name='roll')
-async def roll(ctx, dice: str):
+@bot.tree.command(name="roll")
+@app_commands.describe(dice="Format: NdN (e.g., 2d6 for rolling two six-sided dice)")
+async def roll(interaction: discord.Interaction, dice: str):
     """Rolls a dice in NdN format."""
-    logger.info(f"Roll command used by {ctx.author.name} [{ctx.author.status}] with {dice}")
+    logger.info(f"Roll command used by {interaction.user.name} with {dice}")
     try:
         rolls, sides = map(int, dice.split('d'))
         logger.debug(f"Rolling {rolls} dice with {sides} sides")
     except Exception as e:
         logger.error(f"Invalid dice format: {dice}")
-        await ctx.send('Format has to be in NdN!')
+        await interaction.response.send_message('Format has to be in NdN!')
         return
 
     result = ', '.join(str(random.randint(1, sides)) for r in range(rolls))
     logger.info(f"Roll result: {result}")
-    await ctx.send(result)
+    await interaction.response.send_message(result)
 
-@bot.command(name='inspire')
-async def inspire(ctx):
+@bot.tree.command(name="inspire")
+async def inspire(interaction: discord.Interaction):
     """Get an inspiring quote"""
     try:
         fortune_output = subprocess.check_output(
@@ -57,11 +69,9 @@ async def inspire(ctx):
             shell=True,
             text=True
         )
-
     except FileNotFoundError:
         fortune_output = "The 'fortune' command is not installed on this system."
 
-    await ctx.send(fortune_output)
-
+    await interaction.response.send_message(fortune_output)
 
 bot.run(TOKEN)

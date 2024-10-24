@@ -25,4 +25,5 @@ __pycache__/
 Thumbs.db
 
 .github/workflows/deploy.yml.backup
+src/main.py.backup
 todo.md
