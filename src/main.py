@@ -36,7 +36,7 @@ async def on_ready():
 @bot.tree.command(name="hello")
 async def hello(interaction: discord.Interaction):
     """Says hello to the user"""
-    await interaction.response.send_message(f"Wassup {interaction.user.name}!")
+    await interaction.response.send_message(f"Salut {interaction.user.name}!")
 
 @bot.tree.command(name="ping")
 async def ping(interaction: discord.Interaction):
