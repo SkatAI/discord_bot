@@ -45,9 +45,9 @@ jobs:
         run: |
           scp -r ./* ${{ secrets.SSH_USER }}@${{ secrets.HOST }}:~/bots/${{ github.repository_owner }}/
 
-      - name: export DISCORD_TOKEN
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "export DISCORD_TOKEN='${{ secrets.DISCORD_TOKEN }}'"
+      # - name: export DISCORD_TOKEN
+      #   run: |
+      #     ssh ${{ secrets.SSH_USER }}@${{ secrets.HOST }} "export DISCORD_TOKEN='${{ secrets.DISCORD_TOKEN }}'"
 
       - name: get env variables
         run: |
