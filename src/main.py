@@ -3,6 +3,7 @@ from discord.ext import commands
 import os
 import random
 import logging
+import subprocess
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -47,5 +48,17 @@ async def roll(ctx, dice: str):
     result = ', '.join(str(random.randint(1, sides)) for r in range(rolls))
     logger.info(f"Roll result: {result}")
     await ctx.send(result)
+
+@bot.command(name='inspire')
+async def inspire(ctx):
+    try:
+        fortune_output = subprocess.check_output(['fortune'], text=True)
+    except FileNotFoundError:
+        fortune_output = "The 'fortune' command is not installed on this system."
+
+    # Send the result back to the Discord channel
+    logger.info(f"fortune: {fortune_output}")
+    await ctx.send(fortune_output)
+
 
 bot.run(TOKEN)
