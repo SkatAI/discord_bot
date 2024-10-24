@@ -31,6 +31,10 @@ jobs:
           # Add the host to known_hosts to prevent SSH verification prompts
           # secrets.HOST is your server's IP address
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+      - name: checkout HOST variable
+        run: |
+          echo ${{vars.HOST}}
+
       - name: test connection
         run: |
           # test connection works
