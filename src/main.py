@@ -5,6 +5,10 @@ import subprocess
 import discord
 from discord import app_commands  # Add this import
 
+from dotenv import load_dotenv
+load_dotenv()
+
+
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 logging.basicConfig(
@@ -33,7 +37,7 @@ bot = MyBot()
 async def on_ready():
     logger.info(f'{bot.user} has connected to Discord!')
 
-@bot.tree.command(name="hello")
+@bot.tree.command(name="bonjour")
 async def hello(interaction: discord.Interaction):
     """Says hello to the user"""
     await interaction.response.send_message(f"Salut {interaction.user.name}!")
