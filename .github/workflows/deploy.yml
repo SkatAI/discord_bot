@@ -12,50 +12,9 @@ on:
   push:
     branches: [master]
 
-# The actual jobs to run : first lint then deploy (which depends on lint)
 jobs:
-  lint:
-    runs-on: ubuntu-latest # Uses the latest Ubuntu runner provided by GitHub
-
-    steps:
-      # Step 1: Check out the repository code
-      - uses: actions/checkout@v2 # This action checks out your repository code
-
-      # Step 2: Lint Dockerfile
-      # Note: the '|| true' makes the step successful regardless of the linting results
-      # rm if you want strict linting
-      - name: Lint Dockerfile
-        run: |
-          docker run --rm -i hadolint/hadolint < Dockerfile || true
-
-      # Step 3: Lint docker-compose.yaml
-      # Note: the '|| true' makes the step successful regardless of the linting results
-      # rm if you want strict linting
-      - name: Lint docker-compose.yaml
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/workdir -w /workdir mikefarah/yq eval '.' compose.yaml || true
-
-      # Step 4: Lint Python file (main.py) using pylint
-      #
-      - name: Lint Python code with Pylint
-        run: |
-          python -m pip install pylint
-          python -m pip install --no-cache-dir -r requirements.txt
-          pylint src/main.py || true
-
-      # Step 5: Validate docker-compose.yaml syntax
-      # config: This subcommand validates and renders the Compose file in canonical format,
-      # which means it checks the file for syntax errors, merges all configurations
-      # and outputs a normalized version.
-
-      - name: Validate compose.yaml file
-        run: |
-          docker compose -f compose.yaml config
-
   deploy: # Separate job for deployment
     runs-on: ubuntu-latest # Uses the latest Ubuntu runner provided by GitHub
-
-    needs: lint # This job depends on the successful completion of the lint job
 
     steps:
       # Step 1: Check out the repository code

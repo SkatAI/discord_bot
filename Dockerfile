@@ -1,11 +1,5 @@
 # Use an official Python runtime as the base image
-FROM python:3.9-slim
-
-# Optional
-RUN apt-get update && apt-get install -y \
-    fortune \
-    cowsay \
-    && rm -rf /var/lib/apt/lists/*
+FROM python:3.12-slim
 
 # Set the working directory in the container
 WORKDIR /app
